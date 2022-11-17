@@ -1,10 +1,20 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { trpc } from "../utils/trpc";
+// import { trpc } from "../utils/trpc";
+import Channels from "@components/Channels";
+import Teams from "@components/Teams";
+import Messages from "@components/Messages";
+import Input from "@components/Input";
+import { useRouter } from "next/router";
+import { getServerAuthSession } from "src/server/common/get-server-auth-session";
+import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 
-const Home: NextPage = () => {
-  const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+export default function Home() {
+  // const users = trpc.user.getAll.useQuery();
+  const { push } = useRouter();
+  const session = useSession();
+  if (!session) push("/login");
 
   return (
     <>
