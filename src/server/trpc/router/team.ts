@@ -12,22 +12,22 @@ const defaultTeamSelect = Prisma.validator<Prisma.TeamSelect>()({
 });
 
 export const teamRouter = router({
+  /*=== CREATE TEAM MUTATION ===*/
   create: protectedProcedure
     .input(
-      z
-        .object({
-          id: z.string().uuid().optional(),
-          title: z.string().min(1).max(32),
-          text: z.string().min(1),
-        })
-        .nullish()
+      z.object({
+        name: z.string().min(1).max(20),
+      })
     )
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input?.text ?? "world"}`,
-      };
+    .mutation(async ({ input, ctx }) => {
+      // return true;
+      return await ctx.prisma.team.create({
+        data: { ...input, userId: ctx.session.user.id },
+        select: defaultTeamSelect,
+      });
     }),
+  /*=== GET ALL TEAMS ===*/
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
+    return ctx.prisma.team.findMany();
   }),
 });
