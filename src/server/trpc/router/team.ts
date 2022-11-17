@@ -1,6 +1,8 @@
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
+import { inferProcedureOutput } from "@trpc/server";
+import { AppRouter } from "./_app";
 
 const defaultTeamSelect = Prisma.validator<Prisma.TeamSelect>()({
   id: true,
@@ -10,6 +12,8 @@ const defaultTeamSelect = Prisma.validator<Prisma.TeamSelect>()({
   users: true,
   channels: true,
 });
+
+export type TeamProps = inferProcedureOutput<AppRouter["team"]["getAll"]>;
 
 export const teamRouter = router({
   /*=== CREATE TEAM MUTATION ===*/
@@ -27,7 +31,11 @@ export const teamRouter = router({
       });
     }),
   /*=== GET ALL TEAMS ===*/
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.team.findMany();
+  getAll: protectedProcedure.query(({ ctx }) => {
+    const userId = ctx.session.user.id;
+    return ctx.prisma.team.findMany({
+      where: { userId },
+      select: defaultTeamSelect,
+    });
   }),
 });
