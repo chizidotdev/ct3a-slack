@@ -1,6 +1,6 @@
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
-// import { trpc } from "../utils/trpc";
+import { trpc } from "../utils/trpc";
 import Channels from "@components/Channels";
 import Teams from "@components/Teams";
 import Messages from "@components/Messages";
@@ -11,7 +11,7 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 
 export default function Home() {
-  // const users = trpc.user.getAll.useQuery();
+  const { data: teams } = trpc.team.getAll.useQuery();
   const { push } = useRouter();
   const session = useSession();
   if (!session) push("/login");
@@ -24,7 +24,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="grid h-screen grid-cols-[5rem_16rem_1fr]">
-        <Teams />
+        <Teams data={teams || []} />
         <Channels />
 
         <section className="grid grid-rows-[3.5rem_1fr_4rem]">
