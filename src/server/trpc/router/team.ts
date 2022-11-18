@@ -28,10 +28,17 @@ export const teamRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       // return true;
-      return await ctx.prisma.team.create({
+      const team = await ctx.prisma.team.create({
         data: { ...input, userId: ctx.session.user.id },
         select: defaultTeamSelect,
       });
+      await ctx.prisma.channel.createMany({
+        data: [
+          { name: "general", teamId: team.id },
+          { name: "welcome", teamId: team.id },
+        ],
+      });
+      return team;
     }),
   /*=== GET ALL TEAMS ===*/
   getAll: protectedProcedure.query(({ ctx }) => {
