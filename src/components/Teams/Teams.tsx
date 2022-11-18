@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = {
   teams: TeamProps;
-  setId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const Teams: React.FC<Props> = ({ teams, setId }) => {

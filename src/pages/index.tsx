@@ -28,11 +28,19 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="grid h-screen grid-cols-[5rem_16rem_1fr]">
-        <Teams data={teams || []} />
-        <Channels />
+        <Teams teams={teams || []} setId={setActiveTeamId} />
+        <Channels id={activeTeamId} session={session} />
 
         <section className="grid grid-rows-[3.5rem_1fr_4rem]">
-          <div className="col-span-3">Header</div>
+          <div className="col-span-3">
+            Header
+            <button
+              className="ml-10 rounded-lg border p-2"
+              onClick={() => signOut()}
+            >
+              Logout
+            </button>
+          </div>
 
           <Messages />
 
