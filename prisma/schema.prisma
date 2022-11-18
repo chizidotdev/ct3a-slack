@@ -73,7 +73,6 @@ model Channel {
   id       String    @id @default(cuid())
   name     String
   public   Boolean
-  userId   String
   teamId   String
   team     Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
   messages Message[]
