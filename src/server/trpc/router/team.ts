@@ -14,6 +14,9 @@ const defaultTeamSelect = Prisma.validator<Prisma.TeamSelect>()({
 });
 
 export type TeamProps = inferProcedureOutput<AppRouter["team"]["getAll"]>;
+export type ActiveTeamProps = inferProcedureOutput<
+  AppRouter["team"]["findById"]
+>;
 
 export const teamRouter = router({
   /*=== CREATE TEAM MUTATION ===*/
@@ -38,4 +41,17 @@ export const teamRouter = router({
       select: defaultTeamSelect,
     });
   }),
+  /*=== FIND BY ID ===*/
+  findById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(({ ctx, input }) => {
+      return ctx.prisma.team.findUnique({
+        where: { id: input.id },
+        select: defaultTeamSelect,
+      });
+    }),
 });
