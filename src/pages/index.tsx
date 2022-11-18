@@ -1,20 +1,24 @@
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
-import { trpc } from "../utils/trpc";
 import Channels from "@components/Channels";
 import Teams from "@components/Teams";
 import Messages from "@components/Messages";
 import Input from "@components/Input";
-import { useRouter } from "next/router";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { useState } from "react";
+import { trpc } from "src/utils/trpc";
 
-export default function Home() {
-  const { data: teams } = trpc.team.getAll.useQuery();
-  const { push } = useRouter();
-  const session = useSession();
-  if (!session) push("/login");
+export default function Home({
+  session,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [activeTeamId, setActiveTeamId] = useState("");
+  const { data: teams } = trpc.team.getAll.useQuery(undefined, {
+    onSuccess(data) {
+      if (data[0] !== undefined) setActiveTeamId(data[0].id);
+    },
+  });
 
   return (
     <>
@@ -41,9 +45,17 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps<{
-  session: Session | null;
+  session: Session;
 }> = async (context) => {
   const session = await getServerAuthSession(context);
+
+  if (!session)
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
 
   return {
     props: { session },
