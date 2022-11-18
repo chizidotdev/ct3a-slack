@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps<{
   if (!session)
     return {
       redirect: {
-        destination: "/login",
+        destination: "/api/auth/signin",
         permanent: false,
       },
     };
