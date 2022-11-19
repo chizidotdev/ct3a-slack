@@ -48,7 +48,7 @@ export default function CreateChannel({ teamId }: CreateChannelProps) {
           <div className="mb-3">Create Channel</div>
         </Title>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <div onSubmit={handleSubmit} className="flex flex-col gap-2">
           <label htmlFor="name">
             <div className="relative mt-1 rounded-md shadow-sm">
               <input
@@ -69,7 +69,7 @@ export default function CreateChannel({ teamId }: CreateChannelProps) {
             </Button>
             <Button type="submit">Submit</Button>
           </div>
-        </form>
+        </div>
       </Modal>
     </>
   );
