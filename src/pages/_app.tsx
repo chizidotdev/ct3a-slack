@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import type { AppType } from "next/app";
 import { trpc } from "../utils/trpc";
+import { TeamProvider } from "@store/team-store";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -11,7 +12,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider>
-      <Component {...pageProps} />
+      <TeamProvider>
+        <Component {...pageProps} />
+      </TeamProvider>
     </SessionProvider>
   );
 };

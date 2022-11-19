@@ -1,13 +1,13 @@
+import { useTeam } from "@store/team-store";
 import React from "react";
-import { trpc } from "src/utils/trpc";
 import Container from "./components/Container";
 import CreateChannel from "./components/CreateChannel";
 import Heading from "./components/Heading";
 import List from "./components/List";
 import { Props } from "./types";
 
-const Channels: React.FC<Props> = ({ id, session }) => {
-  const { data: team } = trpc.team.findById.useQuery({ id });
+const Channels: React.FC<Props> = ({ session }) => {
+  const { activeTeam: team } = useTeam();
 
   if (!team)
     return <div className="bg-secondary p-5 text-white">No teams found...</div>;

@@ -7,18 +7,12 @@ import Input from "@components/Input";
 import { getServerAuthSession } from "src/server/common/get-server-auth-session";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
-import { trpc } from "src/utils/trpc";
+import { useTeam } from "@store/team-store";
 
 export default function Home({
   session,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [activeTeamId, setActiveTeamId] = useState("");
-  const { data: teams } = trpc.team.getAll.useQuery(undefined, {
-    onSuccess(data) {
-      if (data[0] !== undefined) setActiveTeamId(data[0].id);
-    },
-  });
+  const { setActiveTeamId, teams } = useTeam();
 
   return (
     <>
@@ -29,7 +23,7 @@ export default function Home({
       </Head>
       <main className="grid h-screen grid-cols-[4rem_16rem_1fr]">
         <Teams teams={teams || []} setId={setActiveTeamId} />
-        <Channels id={activeTeamId} session={session} />
+        <Channels session={session} />
 
         <section className="grid grid-rows-[3.5rem_1fr_4rem]">
           <div className="col-span-3">
@@ -46,7 +40,6 @@ export default function Home({
 
           <Input />
         </section>
-        {/* <AuthShowcase /> */}
       </main>
     </>
   );
