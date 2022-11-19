@@ -14,7 +14,7 @@ const Teams: React.FC<Props> = ({ teams, setId }) => {
           <li
             onClick={() => setId(team.id)}
             key={team.id}
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-white bg-opacity-20 font-bold uppercase transition-all hover:border"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-3xl bg-white bg-opacity-20 font-bold uppercase transition-all duration-200 ease-linear hover:rounded-lg"
           >
             {team.name.charAt(0)}
           </li>
