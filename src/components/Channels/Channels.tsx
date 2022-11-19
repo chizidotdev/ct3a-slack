@@ -1,6 +1,7 @@
 import React from "react";
 import { trpc } from "src/utils/trpc";
 import Container from "./components/Container";
+import CreateChannel from "./components/CreateChannel";
 import Heading from "./components/Heading";
 import List from "./components/List";
 import { Props } from "./types";
@@ -19,7 +20,11 @@ const Channels: React.FC<Props> = ({ id, session }) => {
       </div>
 
       <Container>
-        <Heading>Channel</Heading>
+        <Heading>
+          <div className="flex items-center justify-between">
+            Channel <CreateChannel teamId={team.id} />
+          </div>
+        </Heading>
 
         <List data={team.channels}>
           {(channel) => (
