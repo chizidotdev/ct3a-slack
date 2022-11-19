@@ -1,7 +1,7 @@
 import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { inferProcedureOutput } from "@trpc/server";
+import { inferProcedureOutput, TRPCError } from "@trpc/server";
 import { AppRouter } from "./_app";
 
 const defaultTeamSelect = Prisma.validator<Prisma.TeamSelect>()({
@@ -21,13 +21,8 @@ export type ActiveTeamProps = inferProcedureOutput<
 export const teamRouter = router({
   /*=== CREATE TEAM MUTATION ===*/
   create: protectedProcedure
-    .input(
-      z.object({
-        name: z.string().min(1).max(20),
-      })
-    )
+    .input(z.object({ name: z.string().min(1).max(20) }))
     .mutation(async ({ input, ctx }) => {
-      // return true;
       const team = await ctx.prisma.team.create({
         data: { ...input, userId: ctx.session.user.id },
         select: defaultTeamSelect,
@@ -48,16 +43,36 @@ export const teamRouter = router({
       select: defaultTeamSelect,
     });
   }),
-  /*=== FIND BY ID ===*/
+
+  /*
+   *=== FIND BY ID ===*/
   findById: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
+    .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.team.findUnique({
         where: { id: input.id },
+        select: defaultTeamSelect,
+      });
+    }),
+
+  /*
+   *=== ADD NEW USER ===*/
+  addUser: protectedProcedure
+    .input(z.object({ id: z.string(), email: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { email, id } = input;
+
+      const user = await ctx.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return ctx.prisma.team.update({
+        where: { id },
+        data: {
+          users: { connect: { email } },
+        },
         select: defaultTeamSelect,
       });
     }),
