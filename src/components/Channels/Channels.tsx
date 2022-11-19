@@ -1,4 +1,5 @@
 import { useTeam } from "@store/team-store";
+import Image from "next/image";
 import React from "react";
 import Container from "./components/Container";
 import CreateChannel from "./components/CreateChannel";
@@ -42,7 +43,13 @@ const Channels: React.FC<Props> = ({ session }) => {
         <List data={team.users}>
           {(user) => (
             <>
-              <span className="text-sm opacity-50">-</span>
+              <Image
+                src={user.image}
+                alt=""
+                width={20}
+                height={20}
+                className="rounded-md"
+              />
               <p>{user.name}</p>
             </>
           )}
