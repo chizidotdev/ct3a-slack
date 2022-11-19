@@ -17,6 +17,7 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
+      "@ui/*": ["./src/components/UI/*"],
       "@components/*": ["./src/components/*"],
       "@router/*": ["./src/server/trpc/router/*"]
     }
