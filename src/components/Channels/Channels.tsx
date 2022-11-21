@@ -1,6 +1,7 @@
 import { useTeam } from "@store/team-store";
 import Image from "next/image";
 import React from "react";
+import AddUser from "./components/AddUser";
 import Container from "./components/Container";
 import CreateChannel from "./components/CreateChannel";
 import Heading from "./components/Heading";
@@ -40,20 +41,27 @@ const Channels: React.FC<Props> = ({ session }) => {
       <Container>
         <Heading>Direct messages</Heading>
 
-        <List data={team.users}>
-          {(user) => (
-            <>
-              <Image
-                src={user.image}
-                alt=""
-                width={20}
-                height={20}
-                className="rounded-md"
-              />
-              <p>{user.name}</p>
-            </>
-          )}
+        <List data={[...team.users, team.owner]}>
+          {(user) => {
+            if (user.id === session.user?.id) return null;
+            return (
+              <>
+                <Image
+                  src={user.image}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="rounded-md"
+                />
+                <p>{user.name}</p>
+              </>
+            );
+          }}
         </List>
+      </Container>
+
+      <Container>
+        <AddUser teamId={team.id} />
       </Container>
     </section>
   );
