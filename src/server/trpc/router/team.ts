@@ -14,12 +14,11 @@ const defaultTeamSelect = Prisma.validator<Prisma.TeamSelect>()({
 });
 
 export type TeamProps = inferProcedureOutput<AppRouter["team"]["getAll"]>;
-export type ActiveTeamProps = inferProcedureOutput<
-  AppRouter["team"]["findById"]
->;
 
 export const teamRouter = router({
-  /*=== CREATE TEAM MUTATION ===*/
+  /**
+   * CREATE TEAM MUTATION
+   * */
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1).max(20) }))
     .mutation(async ({ input, ctx }) => {
@@ -35,17 +34,32 @@ export const teamRouter = router({
       });
       return team;
     }),
-  /*=== GET ALL TEAMS ===*/
+
+  /**
+   * GET ALL TEAMS
+   * */
   getAll: protectedProcedure.query(({ ctx }) => {
     const userId = ctx.session.user.id;
     return ctx.prisma.team.findMany({
-      where: { userId },
+      where: {
+        OR: [
+          { userId },
+          {
+            users: {
+              some: {
+                id: userId,
+              },
+            },
+          },
+        ],
+      },
       select: defaultTeamSelect,
     });
   }),
 
-  /*
-   *=== FIND BY ID ===*/
+  /**
+   * FIND BY ID
+   * */
   findById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
@@ -55,18 +69,23 @@ export const teamRouter = router({
       });
     }),
 
-  /*
-   *=== ADD NEW USER ===*/
+  /**
+   * ADD NEW USER
+   * */
   addUser: protectedProcedure
-    .input(z.object({ id: z.string(), email: z.string() }))
+    .input(z.object({ teamId: z.string(), email: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { email, id } = input;
+      const { email, teamId: id } = input;
 
       const user = await ctx.prisma.user.findUnique({
         where: { email },
       });
 
-      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!user)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User with email "${email}" not found`,
+        });
 
       return ctx.prisma.team.update({
         where: { id },
